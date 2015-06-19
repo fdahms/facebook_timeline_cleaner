@@ -193,6 +193,15 @@ function change_status(x, y) {
 
 }
 
+
+function change_story_dom_color(story_dom_id,color){
+    if($(String("#" + story_dom_id)).css("background-color") == 'red'){
+        console.log("Eintrag ist bereits rot,keine aenderung!");
+        return;
+        }
+    $(String("#" + story_dom_id)).css("background-color", color);
+}
+
 var createDeleteRequests = function() {
 
     if (start == false) {
@@ -232,7 +241,7 @@ var createDeleteRequests = function() {
                                         // console.log('What!?'+ajaxify.queryKey['story_dom_id']);
                                         var wasd = $(String("#" + ajaxify.queryKey['story_dom_id'])).parent().parent().parent().attr("id");
                                         if (wasd === undefined) {
-                                            $(String("#" + ajaxify.queryKey['story_dom_id'])).css("background-color", 'magenta');
+                                            change_story_dom_color(ajaxify.queryKey['story_dom_id'],'magenta');
                                             console.log("Mh undefined alter");
                                             return;
                                         }
@@ -248,19 +257,21 @@ var createDeleteRequests = function() {
                                             // $(String("#"+ajaxify.queryKey['story_dom_id'])).css("background-color",
                                             // 'orange');
                                             button_status(tmp, 'Keine Action,aber zu Jung!(' + NEW_TIMESTAMP + ')', 'green');
+                                            change_story_dom_color(ajaxify.queryKey['story_dom_id'],'green');
+
 
                                         } else {
                                             /*
                                              * Die hier loeschen!
                                              */
-                                            $(String("#" + ajaxify.queryKey['story_dom_id'])).css("background-color", 'orange');
-                                            button_status(tmp, 'Keine Action,aber loeschen(' + NEW_TIMESTAMP + ')', 'yellow');
+                                            change_story_dom_color(ajaxify.queryKey['story_dom_id'],'orange');
+                                            button_status(tmp, 'Keine Action,aber loeschen(' + NEW_TIMESTAMP + ')', 'orange');
 
                                             tmp_atrr = $(this).attr('ajaxify').replace(/confirm/, "");
                                             $(this).attr('ajaxify', tmp_atrr);
                                             if (just_test == false) {
                                                 // confirm
-
+                                               counter_up("delete");
                                                 $(this).find("span").click();
                                             }
                                         }
@@ -330,7 +341,6 @@ var createDeleteRequests = function() {
 
                                 if (delete_time_bevor !== false) {
                                     if (Post_timestamp === "") {
-                                        $(this).parent().css("background-color", "orange");
                                         console.log("ORANGE:" + Post_timestamp);
                                         var newtext = $(this).find('span').text() + " -->Kein Timestamp";
                                         $(this).find('span').text(newtext);
@@ -344,6 +354,8 @@ var createDeleteRequests = function() {
                                         console.log("SollZeit: >", delete_time_bevor, " Ist Zeit:", now - Post_timestamp);
                                         var tmp = this;
                                         button_status(tmp, 'Zu Jung', 'green');
+                                        change_story_dom_color(ajaxify.queryKey['story_dom_id'],'green');
+
                                         return;
                                     }
                                 }
@@ -351,7 +363,9 @@ var createDeleteRequests = function() {
                                 /** Verstecken von Eintraegen * */
                                 if ("visibility.php" === ajaxify.file) {
                                     var tmp = this;
-                                    button_status(tmp, '-->Verstecken', 'red');
+                                    button_status(tmp, '-->Verstecken', 'yellow');
+                                    change_story_dom_color(ajaxify.queryKey['story_dom_id'],'yellow');
+
                                     if (just_test == false) {
                                         $(this).find("span").click();
                                         $(this).remove();
@@ -362,9 +376,16 @@ var createDeleteRequests = function() {
                                 } else if ("remove_content.php" === ajaxify.file && only_hide == false) {
                                     var tmp = this;
                                     button_status(tmp, '-->loeschen', 'red');
-                                    $(String("#" + ajaxify.queryKey['story_dom_id'])).css("background-color", 'red');
-
-                                    if (just_test == false) {
+                                    change_story_dom_color(ajaxify.queryKey['story_dom_id'],'red');
+									if (just_test == false) {
+									if(ajaxify.queryKey['action']  === 'unlike')
+									{
+									counter_up("unlike");
+									}else
+									{
+                                      counter_up("delete");
+									  }
+                                    
                                         $(this).find("span").click();
                                     }
                                     // $(this).remove();
@@ -383,7 +404,7 @@ var createDeleteRequests = function() {
                             });
 
                 });
-        $("#delete").text($("div[style='background-color: red;']").size());
+        //$("#delete").text($("div[style='background-color: red;']").size()+$("div[style='background-color: orange;']").size());
     }
     if (iamstillontimeline == true) {
         setTimeout(createDeleteRequests, 10000);
@@ -439,11 +460,20 @@ function add_button() {
     }
 }
 
+function counter_up(objectname){
+var aktuell=parseInt($("#"+objectname).text());
+aktuell=aktuell+1;
+$("#"+objectname).text(aktuell);
+}
+
+
 /**
  * This is the Main Function. It checks if you are on the activies log or not.
  * :D
  */
 
+
+ 
 function main() {
     if ($("#test_checkbox").length > 0) {
         if ($("#test_checkbox").is(':checked')) {
@@ -525,7 +555,7 @@ function main() {
                         $("#enginerun").prop('checked', true);
 
                         $('div[class="_2o49"] span[class="uiButtonGroupItem selectorItem"]').append(
-                                ' Deleted: <span  id="delete">0</span >Hide:<span  id="hided">0</span >');
+                                ' Unlike: <span  id="unlike">0</span> Deleted: <span  id="delete">0</span>Hide:<span  id="hided">0</span >');
                         start = true;
                         console.log("Start with ", selected);
                         createDeleteRequests();
