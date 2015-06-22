@@ -55,6 +55,9 @@ var clicked_buttons = {};
 /*
  * * * * *
  */
+ 
+ 
+
 
 function timeConverter(UNIX_timestamp) {
     var a = new Date(UNIX_timestamp * 1000);
@@ -101,7 +104,8 @@ parseUri.options = {
  * This function scroll down on the Website and load new entrys.
  */
 var expandMoreActivity = function() {
-    var links = $('a[onclick]'); //
+    /*
+	var links = $('a[onclick]'); //
     for ( var i = 0; i < links.length; ++i) {
         // Umg this works only in german or english :
         if ((links[i].innerHTML === "More Activity") || (links[i].innerHTML === "Weitere Aktivitäten")) {
@@ -111,6 +115,7 @@ var expandMoreActivity = function() {
             links[i].click();
         }
     }
+	*/
     if (!limit || (limit && expandCount >= 0)) {
         if (iamstillontimeline == true) {
             setTimeout(expandMoreActivity, 10000);
@@ -265,7 +270,7 @@ var createDeleteRequests = function() {
                                              * Die hier loeschen!
                                              */
                                             change_story_dom_color(ajaxify.queryKey['story_dom_id'],'orange');
-                                            button_status(tmp, 'Keine Action,aber loeschen(' + NEW_TIMESTAMP + ')', 'orange');
+                                            button_status(tmp, 'no action,but delete(' + NEW_TIMESTAMP + ')', 'orange');
 
                                             tmp_atrr = $(this).attr('ajaxify').replace(/confirm/, "");
                                             $(this).attr('ajaxify', tmp_atrr);
@@ -328,7 +333,7 @@ var createDeleteRequests = function() {
                                     // $(this).parents('tr').prepend("Falsche
                                     // Action");
                                     var tmp = this;
-                                    button_status(tmp, 'Falsche Action', 'green');
+                                    button_status(tmp, 'wrong action', 'green');
 
                                     if (ajaxify.queryKey['action'] !== "star" && ajaxify.queryKey['action'] !== "allow"
                                             && ajaxify.queryKey['action'] !== "mark_spam") {
@@ -352,8 +357,9 @@ var createDeleteRequests = function() {
                                         deletedMap[ajaxify.queryKey['story_fbid']] = "Zu Jung!";
                                         console.log("This Entry is too young! NEXT! ID:", ajaxify.queryKey['story_fbid']);
                                         console.log("SollZeit: >", delete_time_bevor, " Ist Zeit:", now - Post_timestamp);
+										console.log("SollZeit: >",timeConverter(now-delete_time_bevor));
                                         var tmp = this;
-                                        button_status(tmp, 'Zu Jung', 'green');
+                                        button_status(tmp, 'to young', 'green');
                                         change_story_dom_color(ajaxify.queryKey['story_dom_id'],'green');
 
                                         return;
@@ -363,19 +369,19 @@ var createDeleteRequests = function() {
                                 /** Verstecken von Eintraegen * */
                                 if ("visibility.php" === ajaxify.file) {
                                     var tmp = this;
-                                    button_status(tmp, '-->Verstecken', 'yellow');
+                                    button_status(tmp, '-->Hide', 'yellow');
                                     change_story_dom_color(ajaxify.queryKey['story_dom_id'],'yellow');
 
                                     if (just_test == false) {
                                         $(this).find("span").click();
-                                        $(this).remove();
+                                        //$(this).remove();
                                     }
 
                                     $("#hided").text(parseInt($("#hided").text()) + 1);
                                     /** Loeschen von Eintraegen * */
                                 } else if ("remove_content.php" === ajaxify.file && only_hide == false) {
                                     var tmp = this;
-                                    button_status(tmp, '-->loeschen', 'red');
+                                    button_status(tmp, '-->delete', 'red');
                                     change_story_dom_color(ajaxify.queryKey['story_dom_id'],'red');
 									if (just_test == false) {
 									if(ajaxify.queryKey['action']  === 'unlike')
@@ -448,12 +454,15 @@ function logging(text, level) {
  */
 function add_button() {
     insert_button = true;
-    $('#js_0 div [class="clearfix uiHeaderTop"]').append('<input type="checkbox" id="scrollen"  name="scrollen">Autoscrollen');
+    $('#js_0 div [class="clearfix uiHeaderTop"]').append('<input type="checkbox" id="scrollen"  name="scrollen" checked>Autoscrollen');
     $('#js_0 div [class="clearfix uiHeaderTop"]').append('<input type="checkbox" id="enginerun"  name="enginerun">Run');
+	    $('#js_0 div [class="clearfix uiHeaderTop"]').append('<br>Entrys older than <input id="groesse" type="number" min="1"  step="1" value="90" style = "width: 4em";> Days');
+
+	
 
     $('div [class="_2o49"]')
             .prepend(
-                    '<span class="uiButtonGroupItem selectorItem"><div class="uiSelector inlineBlock sectionMenu uiSelectorNormal uiSelectorDynamicLabel"><div class="wrap "><button class="hideToggler"></button><a rel="toggle" data-length="30" aria-haspopup="1" href="#" role="button" class="uiSelectorButton uiButton uiButtonOverlay "><span class="uiButtonText">Privacy Extension</span></a><div class="uiSelectorMenuWrapper uiToggleFlyout"><div class="uiMenu uiSelectorMenu" role="menu"><ul class="uiMenuInner"><li class="uiMenuItem uiMenuItemRadio uiSelectorOption " data-key="year_2012" data-label="Hide everything on Timeline" ><a href="#" rel="ignore" class="itemAnchor"   tabindex="0" aria-checked="true"><span class="itemLabel fsm">Hide everything on Timeline older than 90 days</span></a></li><li class="uiMenuItem uiMenuItemRadio uiSelectorOption" data-key="year_2011" data-label="Delete everything"><a href="#" rel="ignore" class="itemAnchor" tabindex="0"  aria-checked="false"><span class="itemLabel fsm">Delete everything</span></a></li><li class="uiMenuItem uiMenuItemRadio uiSelectorOption " data-key="Hide everything on Timeline" data-label="Hide everything on Timeline"><a href="#" rel="ignore"  class="itemAnchor" tabindex="0" aria-checked="false"><span class="itemLabel fsm">Hide everything on Timeline</span></a></li><li class="uiMenuItem uiMenuItemRadio uiSelectorOption" data-key="year_2009" data-label="Delete everything older than 90 Days"><a href="#"  rel="ignore" class="itemAnchor" tabindex="0" aria-checked="false"><span class="itemLabel fsm">Delete everything older than 90 Days</span></a></li><li class="uiMenuItem uiMenuItemRadio uiSelectorOption" data-key="year_2019" data-label="Stop"><a href="#" rel="ignore" class="itemAnchor" tabindex="0"  aria-checked="false"><span class="itemLabel fsm">Stop</span></a></li></ul></div></div><button class="hideToggler"></button></div><select id="selectvalue"><option value=""></option><option value="year_2012">Hide everything on Timeline older than 90 days</option><option value="year_2011">Delete everything</option><option value="year_201x">Hide everything on Timeline</option><option value="year_2009">Delete things older than 90 Days</option><option value="year_2010" >Hide everything on Timeline older than 90 Days</option><option value="year_2019" >Stop</option></select></div></span><input type="checkbox" id="test_checkbox"  name="test_checkbox">DryRun');
+                    '<span class="uiButtonGroupItem selectorItem"><div class="uiSelector inlineBlock sectionMenu uiSelectorNormal uiSelectorDynamicLabel"><div class="wrap "><button class="hideToggler"></button><a rel="toggle" data-length="30" aria-haspopup="1" href="#" role="button" class="uiSelectorButton uiButton uiButtonOverlay "><span class="uiButtonText">Privacy Extension</span></a><div class="uiSelectorMenuWrapper uiToggleFlyout"><div class="uiMenu uiSelectorMenu" role="menu"><ul class="uiMenuInner"><li class="uiMenuItem uiMenuItemRadio uiSelectorOption " data-key="year_2012" data-label="Hide everything on Timeline" ><a href="#" rel="ignore" class="itemAnchor"   tabindex="0" aria-checked="true"><span class="itemLabel fsm">Hide everything on Timeline older than X days</span></a></li><li class="uiMenuItem uiMenuItemRadio uiSelectorOption" data-key="year_2011" data-label="Delete everything"><a href="#" rel="ignore" class="itemAnchor" tabindex="0"  aria-checked="false"><span class="itemLabel fsm">Delete everything</span></a></li><li class="uiMenuItem uiMenuItemRadio uiSelectorOption " data-key="Hide everything on Timeline" data-label="Hide everything on Timeline"><a href="#" rel="ignore"  class="itemAnchor" tabindex="0" aria-checked="false"><span class="itemLabel fsm">Hide everything on Timeline</span></a></li><li class="uiMenuItem uiMenuItemRadio uiSelectorOption" data-key="year_2009" data-label="Delete everything older than X Days"><a href="#"  rel="ignore" class="itemAnchor" tabindex="0" aria-checked="false"><span class="itemLabel fsm">Delete everything older than X Days</span></a></li></ul></div></div><button class="hideToggler"></button></div><select id="selectvalue"><option value=""></option><option value="year_2012">Hide everything on Timeline older than X days</option><option value="year_2011">Delete everything</option><option value="year_201x">Hide everything on Timeline</option><option value="year_2009">Delete things older than X Days</option><option value="year_2010" >Hide everything on Timeline older than X Days</option></select></div></span><input type="checkbox" id="test_checkbox"  name="test_checkbox"><b>DryRun</b>');
 
     if (just_test != false) {
         $("#test_checkbox").prop('checked', true);
@@ -475,6 +484,9 @@ $("#"+objectname).text(aktuell);
 
  
 function main() {
+
+ check_for_timeline(); // Get my location.
+  if (iamstillontimeline == true) {
     if ($("#test_checkbox").length > 0) {
         if ($("#test_checkbox").is(':checked')) {
             just_test = true;
@@ -489,9 +501,9 @@ function main() {
         }
     }
 
-    check_for_timeline(); // Get my location.
+   
     // console.log($(location).attr('href')); // Say me where iam
-    if (iamstillontimeline == true) {
+   
         if (insert_button == false) {
             console.log('Button rein!');
             add_button();
@@ -517,6 +529,7 @@ function main() {
 
                 if ((lastselected != selected) && (selected != "")) {
                     var text = "";
+					var days=parseInt($('#groesse').val());
                     switch (selected) {
 
                     case "Hide everything on Timeline":
@@ -531,16 +544,16 @@ function main() {
                         delete_time_bevor = false;
                         break;
 
-                    case "Hide everything on Timeline older than 90 days":
-                        text = 'WARNING: Are you sure you want hide all entrys that older than 90 Days?';
+                    case "Hide everything on Timeline older than X days":
+                        text = 'WARNING: Are you sure you want hide all entrys that older than '+days+' Days?';
                         only_hide = true;
-                        delete_time_bevor = 60 * 60 * 24 * 90;
+                        delete_time_bevor = 60 * 60 * 24 * days;
                         break;
 
-                    case "Delete things older than 90 Days":
-                        text = 'WARNING: Are you sure you want DELETE all entrys that older than 90 Days?';
+                    case "Delete things older than X Days":
+                        text = 'WARNING: Are you sure you want DELETE all entrys that older than '+days+' Days?';
                         only_hide = false;
-                        delete_time_bevor = 60 * 60 * 24 * 90;
+                        delete_time_bevor = 60 * 60 * 24 * days;
                         break;
 
                     case "Stop":
@@ -552,8 +565,10 @@ function main() {
                     lastselected = selected;
 
                     if (confirm(text)) {
+					        if (just_test != false) {
+								alert("This is only a test! Nothing will really deleted!\nIf you want a normal run, unselect DryRun");
+							}
                         $("#enginerun").prop('checked', true);
-
                         $('div[class="_2o49"] span[class="uiButtonGroupItem selectorItem"]').append(
                                 ' Unlike: <span  id="unlike">0</span> Deleted: <span  id="delete">0</span>Hide:<span  id="hided">0</span >');
                         start = true;
