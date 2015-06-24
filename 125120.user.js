@@ -568,7 +568,7 @@ function main() {
 					        if (just_test != false) {
 								alert("This is only a test! Nothing will really deleted!\nIf you want a normal run, unselect DryRun");
 							}
-                        $("#enginerun").prop('checked', true);
+                        /* $("#enginerun").prop('checked', true); */
                         $('div[class="_2o49"] span[class="uiButtonGroupItem selectorItem"]').append(
                                 ' Unlike: <span  id="unlike">0</span> Deleted: <span  id="delete">0</span>Hide:<span  id="hided">0</span >');
                         start = true;
